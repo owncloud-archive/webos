@@ -1,0 +1,10 @@
+{
+	"id": "com.areichman.owncloud",
+	"version": "0.0.71",
+	"vendor": "areichman",
+	"type": "web",
+	"main": "index.html",
+	"title": "ownCloud",
+	"icon": "icon.png",
+	"uiRevision": 2
+}
