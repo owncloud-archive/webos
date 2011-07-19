@@ -1,0 +1,15 @@
+To compile an ipk file for testing in emulator or on an actual device use:
+
+palm-package .
+
+from inside the project directory
+
+To install the package:
+
+palm-install com.areichman.owncloud_<version>_all.ipk
+
+while emulator is running. Or use -d if device is plugged in
+
+To remove the package
+
+palm-install -d com.areichman.owncloud

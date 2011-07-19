@@ -1,0 +1,3 @@
+- Don't hardcode owncloud URL
+- make file listing recursive(?) so it works for more than just root directory
+- General cleanup
