@@ -54,11 +54,10 @@ enyo.kind
 			},
 			{
 				kind: "Menu",
+				name: "sessions",
 				components:
 				[
-					{caption: "Session 1"},
-					{caption: "Session 2"},
-					{caption: "Session 3"}
+					{caption: "New Session", onclick: "newInstance"}
 				]
 			},
 			{
@@ -93,12 +92,14 @@ enyo.kind
 						[
 							{
 								kind: "Input",
+								name: "serverlocation",
 								hint: "Server Location",
 								flex: 1
 							},
 							{
 								kind: "Button",
-								caption: "OK"
+								caption: "OK",
+								onclick: "addInstance"
 							},
 							{
 								kind: "Button",
@@ -157,7 +158,8 @@ enyo.kind
 		},
 		showMenu: function(inSender)
 		{
-			this.$.menu.openAtCenter();
+			this.$.sessions.render();
+			this.$.sessions.openAtCenter();
 		},
 		newInstance: function(inSender)
 		{
@@ -165,7 +167,15 @@ enyo.kind
 		},
 		confirmClick: function(inSender)
 		{
-			this.$.dialog.close();
-		}
+			this.$.newinstance.close();
+		},
+		addInstance: function(inSender)
+		{
+			var servername = this.$.serverlocation.getValue();
+			this.$.sessions.createComponent(
+				{name: servername, caption: this.$.serverlocation.getValue()}
+			);
+			this.$.newinstance.close();
+		}  
 	}
 )
