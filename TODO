@@ -1,3 +1,8 @@
 - Don't hardcode owncloud URL
 - make file listing recursive(?) so it works for more than just root directory
 - General cleanup
+
+--MMcKeen
+  -Make it so that sessions are saved and stored and add deletion functionality into the session selection dialogue
+  -Seperate the session name and the owncloud url(?)
+  -implement error checking for the session submission dialogue, we cannot have two sessions with the same name
