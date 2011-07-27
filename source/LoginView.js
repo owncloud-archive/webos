@@ -28,7 +28,7 @@ enyo.kind
 			onLogin: ""
 		},
 		components:
-		[
+		[	
 			{
 				kind: "PageHeader",
 				content: "ownCloud > Login"
@@ -55,6 +55,7 @@ enyo.kind
 			{
 				kind: "Menu",
 				name: "sessions",
+				lazy: true,
 				components:
 				[
 					{caption: "New Session", onclick: "newInstance"}
@@ -123,6 +124,25 @@ enyo.kind
 				]
 			},
 		],
+		ready: function(){
+			// Open and create the HTML5 DB and initialize tables
+			this.$.db = openDatabase("ownCloudDB", "1.0", "ownCloudDB", 5000);
+			this.$.db.transaction(function(tx){
+				tx.executeSql("CREATE TABLE IF NOT EXISTS sessions (id_unique, session_name)");
+			});
+			//Initialize session menu with stored sessions
+			var hashRef = this.$;
+			this.$.db.transaction(function(tx){
+				tx.executeSql('SELECT * FROM sessions', [], function (tx, results) {
+					var len = results.rows.length;
+						for (x = 0; x < len; x++)
+							hashRef.sessions.createComponent(
+								{name: results.rows.item(x).session_name, caption: results.rows.item(x).session_name}
+							);				
+				});
+			});
+			this.$.sessions.validateComponents();
+		},
 		loginhandler: function(inSender, e)
 		{
 			var loggedin=0;
@@ -157,7 +177,8 @@ enyo.kind
 			}
 		},
 		showMenu: function(inSender)
-		{
+		{	
+			//Call this.$.sessions.render to make sure that added components are in DOM
 			this.$.sessions.render();
 			this.$.sessions.openAtCenter();
 		},
@@ -172,9 +193,12 @@ enyo.kind
 		addInstance: function(inSender)
 		{
 			var servername = this.$.serverlocation.getValue();
+			this.$.db.transaction(function(tx){
+				tx.executeSql("INSERT INTO sessions VALUES ('"+servername+"','"+servername+"')");
+			});
 			this.$.sessions.createComponent(
-				{name: servername, caption: this.$.serverlocation.getValue()}
-			);
+				{name: servername, caption: servername}
+			);	
 			this.$.newinstance.close();
 		}  
 	}
