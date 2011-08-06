@@ -58,8 +58,21 @@ enyo.kind
 				lazy: true,
 				components:
 				[
-					{caption: "New Session", onclick: "newInstance"}
+					{caption: "Manage Sessions", name: "managesessionsbut", onclick: "instanceManage"}
 				]
+			},
+			{
+				kind: "Menu",
+				name: "managesessions",
+				lazy: true,
+				components:
+				[
+					{caption: "New Session", onclick: "newInstance"}
+				],
+				deleteInstance: function(inSender)
+				{
+					this.owner.deleteInstance(inSender);
+				}
 			},
 			{
 				kind: "LabeledContainer",
@@ -130,18 +143,26 @@ enyo.kind
 			this.$.db.transaction(function(tx){
 				tx.executeSql("CREATE TABLE IF NOT EXISTS sessions (id_unique, session_name)");
 			});
-			//Initialize session menu with stored sessions
+			//Initialize session menus with stored sessions
 			var hashRef = this.$;
 			this.$.db.transaction(function(tx){
 				tx.executeSql('SELECT * FROM sessions', [], function (tx, results) {
 					var len = results.rows.length;
-						for (x = 0; x < len; x++)
+						for (x = 0; x < len; x++){
 							hashRef.sessions.createComponent(
 								{name: results.rows.item(x).session_name, caption: results.rows.item(x).session_name}
-							);				
+							);
+							hashRef.managesessions.createComponent(
+								{
+									caption: results.rows.item(x).session_name,
+									components:[{kind: "Button", name: results.rows.item(x).session_name, caption: "Delete", onclick:"deleteInstance"}]
+								}
+							);
+						}
 				});
 			});
 			this.$.sessions.validateComponents();
+			this.$.managesessions.validateComponents();
 		},
 		loginhandler: function(inSender, e)
 		{
@@ -190,6 +211,30 @@ enyo.kind
 		{
 			this.$.newinstance.close();
 		},
+		instanceManage: function(inSender)
+		{
+			this.$.sessions.close();
+			this.$.managesessions.render();
+			this.$.managesessions.openAtCenter();
+		},
+		deleteInstance: function(inSender)
+		{
+			var componentname = inSender.name;
+			this.$.db.transaction(function(tx){
+				tx.executeSql("DELETE FROM sessions WHERE id_unique='"+componentname+"'");
+			}); 
+			var sessions = this.$.sessions.getComponents();
+			var mansessions = this.$.managesessions.getComponents();
+			for(var i=0;i<sessions.length;i++)
+				if(sessions[i].name == componentname){
+					sessions[i].destroy();
+					mansessions[i].destroy();
+				}
+			this.$.sessions.validateComponents();
+			this.$.managesessions.validateComponents();
+			this.$.managesessions.render();
+			this.$.sessions.render();
+		},
 		addInstance: function(inSender)
 		{
 			var servername = this.$.serverlocation.getValue();
@@ -198,8 +243,13 @@ enyo.kind
 			});
 			this.$.sessions.createComponent(
 				{name: servername, caption: servername}
-			);	
+			);
+			this.$.managesessions.createComponent(
+				{caption: servername, components:[{kind: "Button", name: servername, caption: "Delete", onclick:"deleteInstance"}]}
+			);
 			this.$.newinstance.close();
-		}  
+			this.$.managesessions.validateComponents();
+			this.$.sessions.validateComponents();
+		}
 	}
 )
