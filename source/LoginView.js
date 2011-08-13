@@ -254,7 +254,6 @@ enyo.kind
 			this.$.managesessions.createComponent(
 				{caption: servername, components:[{kind: "Button", name: servername, caption: "Delete", onclick:"deleteInstance"}]}
 			);
-			this.$.newinstance.reset();
 			this.$.newinstance.close();
 			this.$.managesessions.validateComponents();
 			this.$.sessions.validateComponents();
