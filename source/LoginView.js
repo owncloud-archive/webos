@@ -59,7 +59,11 @@ enyo.kind
 				components:
 				[
 					{caption: "Manage Sessions", name: "managesessionsbut", onclick: "instanceManage"}
-				]
+				],
+				setActiveSession: function(inSender)
+				{
+					this.owner.$.activesession.setCaption("Session: " + inSender.caption);
+				}
 			},
 			{
 				kind: "Menu",
@@ -86,7 +90,7 @@ enyo.kind
 				[
 					{kind: "Button", caption: "Login", onclick: "loginhandler"},
 					{kind: "Button", caption: "Add new ownCloud instance", onclick: "newInstance"},
-					{kind: "Button", caption: "Session", onclick: "showMenu"}
+					{kind: "Button", name: "activesession", caption: "Session: None", onclick:"showMenu"}
 				]
 			},
 			{
@@ -150,7 +154,7 @@ enyo.kind
 					var len = results.rows.length;
 						for (x = 0; x < len; x++){
 							hashRef.sessions.createComponent(
-								{name: results.rows.item(x).session_name, caption: results.rows.item(x).session_name}
+								{name: results.rows.item(x).session_name, caption: results.rows.item(x).session_name, onclick: "setActiveSession"}
 							);
 							hashRef.managesessions.createComponent(
 								{
@@ -219,7 +223,7 @@ enyo.kind
 		},
 		deleteInstance: function(inSender)
 		{
-			var componentname = inSender.name;
+			var componentname = inSender.getName();
 			this.$.db.transaction(function(tx){
 				tx.executeSql("DELETE FROM sessions WHERE id_unique='"+componentname+"'");
 			}); 
@@ -230,6 +234,9 @@ enyo.kind
 					sessions[i].destroy();
 					mansessions[i].destroy();
 				}
+			if(("Session: " + componentname) == this.$.activesession.getCaption())
+				this.$.activesession.setCaption('Session: None');
+
 			this.$.sessions.validateComponents();
 			this.$.managesessions.validateComponents();
 			this.$.managesessions.render();
@@ -242,11 +249,12 @@ enyo.kind
 				tx.executeSql("INSERT INTO sessions VALUES ('"+servername+"','"+servername+"')");
 			});
 			this.$.sessions.createComponent(
-				{name: servername, caption: servername}
+				{name: servername, caption: servername, onclick: "setActiveSession"}
 			);
 			this.$.managesessions.createComponent(
 				{caption: servername, components:[{kind: "Button", name: servername, caption: "Delete", onclick:"deleteInstance"}]}
 			);
+			this.$.newinstance.reset();
 			this.$.newinstance.close();
 			this.$.managesessions.validateComponents();
 			this.$.sessions.validateComponents();
