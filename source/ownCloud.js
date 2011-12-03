@@ -53,6 +53,11 @@ enyo.kind
 				]
 			}
 		],
+		create: function()
+		{
+			this.inherited(arguments);
+			this.gotologin();
+		},
 		gotologin: function(inSender, e)
 		{
 			this.$.mainPane.selectViewByName("loginView");
@@ -71,7 +76,6 @@ enyo.kind
 		},
 		logmein: function(inSender)
 		{
-			
 			this.$.mainPane.selectViewByName("fileView");
 		}
 	}

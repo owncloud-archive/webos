@@ -58,8 +58,14 @@ enyo.kind
 				]
 			}
 		],
-		setupRow: function(inSender, inIndex)
+		create: function()
 		{
+			this.inherited(arguments);
+			this.fileList = [];
+		},
+		getFileList: function(url)
+	 	{
+
 			var xmlhttp;
 			var xmlobject;
 			xmlhttp=new XMLHttpRequest();
@@ -67,23 +73,39 @@ enyo.kind
 			{
 				if (xmlhttp.readyState==4 && xmlhttp.status==207)
 				{
-					/*xmlobject=xmlhttp.responseXML;*/
-					fileList=xmlhttp.responseXML.documentElement.getElementsByTagName("response");
+					list = xmlhttp.responseXML.documentElement.getElementsByTagName("response");
 				}
 				else if (xmlhttp.readyState==4 && xmlhttp.status!==207)
 				{
 					alert("Ready state: " + xmlhttp.readyState + "\nStatus: " + xmlhttp.status);
 				}
 			}
-			xmlhttp.open("PROPFIND","http://192.168.0.8/owncloud/files/webdav.php/",false, "test", "test");
+
+			if(url == "")
+			{
+				url = "http://192.168.0.8/owncloud/files/webdav.php/";
+			}
+
+			xmlhttp.open("PROPFIND",url ,false, "test", "test");
 			xmlhttp.setRequestHeader("Content-type", "text/xml");
 			xmlhttp.setRequestHeader("Depth", "infinity");
 			xmlhttp.send();
 
- 			if( (inIndex >= 0) && (inIndex < fileList.length) )
+			for(i=0; i<list.length; i++)
 			{
-				var str=decodeURIComponent(fileList.item(inIndex).firstChild.firstChild.nodeValue);
-				alert("str : " + str);
+				this.fileList[i] = list.item(i);
+			}
+			this.setupRow();
+		},
+		setupRow: function(inSender, inIndex)
+		{
+			if(this.fileList.length == 0){
+				this.getFileList("");
+			}
+
+ 			if( (inIndex >= 0) && (inIndex < this.fileList.length) )
+			{
+				var str=decodeURIComponent(this.fileList[inIndex].firstChild.firstChild.nodeValue);
 				this.$.caption.setContent(str.substr(27));
 				this.$.View.setCaption("View File");
 				this.$.Download.setCaption("Download");
@@ -91,4 +113,4 @@ enyo.kind
 			}
 		}
 	}
-)
+);
