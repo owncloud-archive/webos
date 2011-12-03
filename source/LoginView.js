@@ -186,7 +186,7 @@ enyo.kind
 // 					alert("Ready state: " + xmlhttp.readyState + "\nStatus: " + xmlhttp.status);
 				}
 			}
-			xmlhttp.open("PROPFIND","http://gleighton.nl/owncloud/files/webdav.php/",false, this.$.username.getValue(),this.$.password.getValue());
+			xmlhttp.open("PROPFIND","http://192.168.0.8/owncloud/files/webdav.php/",false, this.$.username.getValue(),this.$.password.getValue());
 			xmlhttp.setRequestHeader("Content-type", "text/xml");
 			xmlhttp.setRequestHeader("Depth", "infinity");
 			xmlhttp.send();

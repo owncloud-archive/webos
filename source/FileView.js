@@ -67,21 +67,23 @@ enyo.kind
 			{
 				if (xmlhttp.readyState==4 && xmlhttp.status==207)
 				{
-					xmlobject=xmlhttp.responseXML;
+					/*xmlobject=xmlhttp.responseXML;*/
+					fileList=xmlhttp.responseXML.documentElement.getElementsByTagName("response");
 				}
-				else
+				else if (xmlhttp.readyState==4 && xmlhttp.status!==207)
 				{
-// 					alert("Ready state: " + xmlhttp.readyState + "\nStatus: " + xmlhttp.status);
+					alert("Ready state: " + xmlhttp.readyState + "\nStatus: " + xmlhttp.status);
 				}
 			}
-			xmlhttp.open("PROPFIND","http://gleighton.nl/owncloud/files/webdav.php/",false, "areichman","test");
+			xmlhttp.open("PROPFIND","http://192.168.0.8/owncloud/files/webdav.php/",false, "test", "test");
 			xmlhttp.setRequestHeader("Content-type", "text/xml");
 			xmlhttp.setRequestHeader("Depth", "infinity");
 			xmlhttp.send();
 
- 			if( (inIndex >= 0) && (inIndex < xmlobject.documentElement.getElementsByTagName("response").length - 1) )
+ 			if( (inIndex >= 0) && (inIndex < fileList.length) )
 			{
-				var str=decodeURIComponent(xmlobject.documentElement.childNodes[(2*inIndex)+3].childNodes[1].childNodes[0].nodeValue)
+				var str=decodeURIComponent(fileList.item(inIndex).firstChild.firstChild.nodeValue);
+				alert("str : " + str);
 				this.$.caption.setContent(str.substr(27));
 				this.$.View.setCaption("View File");
 				this.$.Download.setCaption("Download");
